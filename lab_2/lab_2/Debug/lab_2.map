@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_1.asm Sun May 28 14:46:08 2023
+AVRASM ver. 2.2.8  C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm Tue May 30 16:33:17 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -4881,7 +4881,22 @@ EQU  USART_DRE_voffset 00000002
 EQU  USART_TXC_voffset 00000004
 EQU  SPI_INT_voffset 00000000
 EQU  INT_VECTORS_SIZE 000000fe
-EQU  INPUT        00000000
-EQU  OUTPUT       000000ff
+EQU  sramend      00003fff
+EQU  srambegin    00002000
+EQU  input        00000000
+EQU  output       000000ff
+DEF  ms_r16       r16
+DEF  us_r17       r17
+DEF  zero_r18     r18
+DEF  one_r19      r19
+DEF  four_r20     r20
+DEF  multiple_r21 r21
 CSEG MAIN         00000100
-CSEG LOOP         00000106
+CSEG LOOP         0000010b
+CSEG delay_x_10ms 0000011d
+CSEG delay_10ms   0000010f
+CSEG tenms        00000111
+CSEG onekus       00000112
+CSEG faus         00000113
+CSEG loopx        0000011e
+CSEG exit         00000124

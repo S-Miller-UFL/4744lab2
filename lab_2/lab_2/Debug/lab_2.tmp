@@ -7,7 +7,7 @@
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_1.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128A1Udef.inc</FILE>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc</FILE>
@@ -23,7 +23,14 @@
   <FILE>lab_2.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <MAIN><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_1.asm</FILE><LINE>24</LINE></MAIN>
-  <LOOP><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_1.asm</FILE><LINE>30</LINE></LOOP>
+  <MAIN><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>29</LINE></MAIN>
+  <LOOP><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>44</LINE></LOOP>
+  <delay_x_10ms><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>83</LINE></delay_x_10ms>
+  <delay_10ms><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>56</LINE></delay_10ms>
+  <tenms><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>59</LINE></tenms>
+  <onekus><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>62</LINE></onekus>
+  <faus><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>65</LINE></faus>
+  <loopx><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>85</LINE></loopx>
+  <exit><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_2.asm</FILE><LINE>91</LINE></exit>
  </LABELS>
 </ASSEMBLER_INFO>
