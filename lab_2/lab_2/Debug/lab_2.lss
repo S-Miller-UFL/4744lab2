@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.8  C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm Thu Jun 01 00:00:25 2023
+AVRASM ver. 2.2.8  C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm Thu Jun 01 18:21:11 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128A1Udef.inc'
-C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc'
+C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128A1Udef.inc'
-C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc'
+C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc'
                                  
                                  ;******************************************************************************
                                  
@@ -6763,6 +6763,11 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  .EQU allzeroes = 0b00000000
                                  .EQU s2bit = 3
                                  .EQU s1bit = 2
+                                 .EQU sysclk = 2000000
+C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm(22): warning: float->int cast, truncated
+                                 .EQU debouncereciprocal =1/.01
+                                 .EQU offset = 0
+                                 .EQU prescalar = 1024
                                  ;*******END OF DEFINED SYMBOLS***********************
                                  
                                  ;*******MEMORY CONSTANTS*****************************
@@ -6787,10 +6792,10 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
 000103 e30f                      	ldi r16, high(sramend)
 000104 9300 003e                 	sts CPU_SPH,r16
                                  ; initialize relevant I/O modules (switches and LEDs)
-000106 d00e                      	rcall IO_INIT
+000106 d05e                      	rcall IO_INIT
                                  
                                  ; initialize (but do not start) the relevant timer/counter module(s)
-000107 d017                      	rcall TC_INIT
+000107 d069                      	rcall TC_INIT
                                  
                                  ; Initialize the X and Y indices to point to the beginning of the 
                                  ; animation table. (Although one pointer could be used to both
@@ -6810,32 +6815,45 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ; Check if it is intended that "PLAY" mode be started, i.e.,
                                  ; determine if the relevant switch has been pressed.
 00010c 9100 06a8                 	lds r16, PORTF_IN
-00010e fd03                      	sbrc r16, s2bit
-00010f c004                      	rjmp play
-                                 	;output port A to port C
-000110 9100 0608                 	lds r16, PORTA_IN
-000112 9300 0644                 	sts PORTC_OUT, r16
-                                 
                                  ; If it is determined that relevant switch was pressed, 
                                  ; go to "PLAY" mode.
-                                 
+00010e ff03                      	sbrs r16, s2bit
+00010f c028                      	rjmp play
                                  
                                  ; Otherwise, if the "PLAY" mode switch was not pressed,
                                  ; update display LEDs with the voltage values from relevant DIP switches
                                  ; and check if it is intended that a frame be stored in the animation
                                  ; (determine if this relevant switch has been pressed).
-                                 
+000110 9100 0608                 	lds r16, PORTA_IN
+000112 9300 0644                 	sts PORTC_OUT, r16
                                  
                                  ; If the "STORE_FRAME" switch was not pressed,
                                  ; branch back to "EDIT".
-                                 
+000114 9110 06a8                 	lds r17, PORTF_IN
+000116 fd12                      	sbrc r17, s1bit
+000117 cff4                      	rjmp edit
                                  
                                  ; Otherwise, if it was determined that relevant switch was pressed,
                                  ; perform debouncing process, e.g., start relevant timer/counter
                                  ; and wait for it to overflow. (Write to CTRLA and loop until
                                  ; the OVFIF flag within INTFLAGS is set.)
-                                 
                                  	
+                                 	;load period register
+000118 e103                      	ldi r16,low(((sysclk/prescalar)/debouncereciprocal)+offset)
+000119 9300 0826                 	sts TCC0_PER, r16
+00011b e000                      	ldi r16,high(((sysclk/prescalar)/debouncereciprocal)+offset)
+00011c 9300 0827                 	sts TCC0_PER+1,r16
+00011e e007                      	ldi r16,TC_CLKSEL_DIV1024_gc
+00011f 9300 0800                 	sts TCC0_CTRLA,r16
+                                 
+                                 	;debouncing
+                                 	debounceloop:
+000121 9110 080c                 		lds r17,TCC0_INTFLAGS
+                                 		;check ov flag
+                                 		;branch if we have overflow
+000123 ff10                      		sbrs  r17,TC0_OVFIF_bp
+000124 cffc                      		rjmp debounceloop
+                                 
                                  ; After relevant timer/counter has overflowed (i.e., after
                                  ; the relevant debounce period), disable this timer/counter,
                                  ; clear the relevant timer/counter OVFIF flag,
@@ -6843,30 +6861,51 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ; actually pressed. If so, perform intended functionality, and
                                  ; otherwise, do not; however, in both cases, wait for switch to
                                  ; be released before jumping back to "EDIT".
-                                 
+                                 	;disable TC
+000125 e010                      	ldi r17, 0b00000000
+000126 9310 0800                 	sts TCC0_CTRLA,r17
+                                 	;clear ov flag
+000128 e011                      	ldi r17, 0b00000001
+000129 9310 080c                 	sts TCC0_INTFLAGS,r17
+                                 	;clear period register
+00012b e010                      	ldi r17, 0b00000000
+00012c 9310 0826                 	sts TCC0_PER,r17
+00012e 9310 0827                 	sts TCC0_PER+1,r17
                                  
                                  ; Wait for the "STORE FRAME" switch to be released
                                  ; before jumping to "EDIT".
                                  STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP:
-                                 
+                                 	;read switch again
+000130 9110 06a8                 	lds r17, PORTF_IN
+000132 ff12                      	sbrs r17, s1bit
+000133 cffc                      	rjmp store_frame_switch_release_wait_loop
+                                 	storeframe:
+                                 		;store port A registers in X
+000134 9100 0608                 		lds r16, PORTA_IN
+000136 930d                      		st x+, r16
+000137 cfd4                      		rjmp edit
+                                 	
+                                 	
                                  	
                                  ; "PLAY" mode
                                  PLAY:
                                  
                                  ; Reload the relevant index to the first memory location
                                  ; within the animation table to play animation from first frame.
-                                 
+000138 e0c0                      	ldi YL,low(animation_start_addr)
+000139 e2d0                      	ldi YH,high(animation_start_addr)
+00013a 9109                      	ld r16, y+
+00013b 9300 0644                 	sts PORTC_OUT,r16
                                  
                                  PLAY_LOOP:
                                  
                                  ; Check if it is intended that "EDIT" mode be started
                                  ; i.e., check if the relevant switch has been pressed.`
-                                 
-                                 
+00013d 9110 06a8                 	lds r17, PORTF_IN
                                  ; If it is determined that relevant switch was pressed, 
                                  ; go to "EDIT" mode.
-                                 
-                                 
+00013f ff12                      	sbrs r17, s1bit
+000140 cfcb                      	rjmp edit
                                  ; Otherwise, if the "EDIT" mode switch was not pressed,
                                  ; determine if index used to load frames has the same
                                  ; address as the index used to store frames, i.e., if the end
@@ -6875,6 +6914,21 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ; including zero, to playback properly.)
                                  ; To efficiently determine if these index values are equal,
                                  ; a combination of the "CP" and "CPC" instructions is recommended.
+                                 	
+                                 	comparexylower:
+                                 		;compare lower bytes of x and y
+000141 2f0a                      		mov r16,xl
+000142 2f1c                      		mov r17, yl
+000143 1701                      		cp r16,r17
+000144 f009                      		breq comparexyhigher
+000145 c005                      		rjmp fivecyclecounter
+                                 		comparexyhigher:
+                                 			;compare higher bytes of x and y
+000146 2f0b                      			mov r16,xh
+000147 2f1d                      			mov r17, yh
+000148 1701                      			cp r16,r17
+000149 f371                      			breq play
+00014a c000                      			rjmp fivecyclecounter
                                  
                                  
                                  ; If index values are equal, branch back to "PLAY" to
@@ -6890,10 +6944,35 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ; clear the relevant OVFIF flag,
                                  ; and then jump back to "PLAY_LOOP".
                                  
-                                 
+                                 fivecyclecounter:
+                                 	;load period register
+00014b e005                      	ldi r16,5
+00014c 9300 0826                 	sts TCC0_PER, r16
+00014e e000                      	ldi r16,0
+00014f 9300 0827                 	sts TCC0_PER+1,r16
+000151 e007                      	ldi r16,TC_CLKSEL_DIV1024_gc
+000152 9300 0800                 	sts TCC0_CTRLA,r16
+000154 e000                      	ldi r16,0
+000155 9300 0820                 	sts TCC0_CNT, r16
+000157 9300 0821                 	sts TCC0_CNT+1,r16
+                                 	loadanimationframe:
+                                 		;load animation frames
+000159 9109                      		ld r16, y+
+00015a 9300 0644                 		sts PORTC_OUT,r16
+00015c 9110 080c                 		lds r17,TCC0_INTFLAGS
+                                 		;check ov flag
+                                 		;branch if we have overflow
+00015e ff10                      		sbrs  r17,TC0_OVFIF_bp
+00015f cff9                      		rjmp loadanimationframe
+                                 		;clear OVF
+000160 e011                      		ldi r17, 0b00000001
+000161 9310 080c                 		sts TCC0_INTFLAGS,r17
+000163 cfd9                      		rjmp play_loop
+                                 	
+                                 		
                                  ; end of program (never reached)
                                  DONE: 
-000114 cfff                      	rjmp DONE
+000164 cfff                      	rjmp DONE
                                  ;*******END OF MAIN PROGRAM *************************
                                  
                                  ;*******SUBROUTINES**********************************
@@ -6907,21 +6986,21 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ;****************************************************
                                  IO_INIT:
                                  ; protect relevant registers
-                                 
+000165 930f                      	push r16
                                  ; initialize the relevant I/O
                                  	;set port C as output
-000115 ef0f                      	ldi r16, allones
-000116 9300 0641                 	sts PORTC_DIRSET,r16
+000166 ef0f                      	ldi r16, allones
+000167 9300 0641                 	sts PORTC_DIRSET,r16
                                  	;set port A as input
-000118 ef0f                      	ldi r16, allones
-000119 9300 0602                 	sts PORTA_DIRCLR,r16
+000169 ef0f                      	ldi r16, allones
+00016a 9300 0602                 	sts PORTA_DIRCLR,r16
                                  	;set port F as input
-00011b ef0f                      	ldi r16, allones
-00011c 9300 06a2                 	sts PORTF_DIRCLR,r16
+00016c ef0f                      	ldi r16, allones
+00016d 9300 06a2                 	sts PORTF_DIRCLR,r16
                                  ; recover relevant registers
-                                 	
+00016f 910f                      	pop r16
                                  ; return from subroutine
-00011e 9508                      	ret
+000170 9508                      	ret
                                  ;****************************************************
                                  ; Name: TC_INIT 
                                  ; Purpose: To initialize the relevant timer/counter modules, as pertains to
@@ -6931,17 +7010,23 @@ C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm(10): Including file '
                                  ;****************************************************
                                  TC_INIT:
                                  ; protect relevant registers
-                                 
+000171 930f                      	push r16
                                  ; initialize the relevant TC modules
-00011f e000                      	ldi r16, allzeroes
-000120 9300 0820                 	sts TCC0_CNT, r16
-000122 9300 0821                 	sts TCC0_CNT+1,r16
-000124 9300 0826                 	sts TCC0_PER, r16
-000126 9300 0827                 	sts TCC0_PER+1, r16
+000172 e000                      	ldi r16, allzeroes
+000173 9300 0820                 	sts TCC0_CNT, r16
+000175 9300 0821                 	sts TCC0_CNT+1,r16
+000177 9300 0826                 	sts TCC0_PER, r16
+000179 9300 0827                 	sts TCC0_PER+1, r16
+                                 	;initialize CTRLB
+00017b e000                      	ldi r16, allzeroes
+00017c 9300 0801                 	sts TCC0_CTRLB,r16
+                                 	;clear OVF
+00017e e011                      	ldi r17, 0b00000001
+00017f 9310 080c                 	sts TCC0_INTFLAGS,r17
                                  ; recover relevant registers
-                                 	
+000181 910f                      	pop r16
                                  ; return from subroutine
-000128 9508                      	ret
+000182 9508                      	ret
                                  
 
 
@@ -6960,42 +7045,42 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATxmega128A1U" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   1 y  :   2 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  19 r17:   0 r18:   0 r19:   0 r20:   0 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   1 r27:   1 r28:   1 
-r29:   1 r30:   0 r31:   0 
-Registers used: 5 out of 35 (14.3%)
+r13:   0 r14:   0 r15:   0 r16:  50 r17:  25 r18:   0 r19:   0 r20:   0 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   2 r27:   2 r28:   3 
+r29:   3 r30:   0 r31:   0 
+Registers used: 8 out of 35 (22.9%)
 
 "ATxmega128A1U" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   2 cpc   :   0 
 cpi   :   0 cpse  :   0 dec   :   0 des   :   0 eicall:   0 eijmp :   0 
 elpm  :   0 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 
 ijmp  :   0 in    :   0 inc   :   0 jmp   :   0 lac   :   0 las   :   0 
-lat   :   0 ld    :   0 ldd   :   0 ldi   :  10 lds   :   2 lpm   :   0 
-lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 
+lat   :   0 ld    :   2 ldd   :   0 ldi   :  25 lds   :   8 lpm   :   0 
+lsl   :   0 lsr   :   0 mov   :   4 movw  :   0 mul   :   0 muls  :   0 
 mulsu :   0 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   0 
-pop   :   0 push  :   0 rcall :   2 ret   :   2 reti  :   0 rjmp  :   3 
+pop   :   2 push  :   2 rcall :   2 ret   :   2 reti  :   0 rjmp  :  12 
 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 
-sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   0 sec   :   0 
+sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   5 sec   :   0 
 seh   :   0 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 
-sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
-sts   :  10 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
+sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   1 std   :   0 
+sts   :  27 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 xch   :   0 
-Instructions used: 7 out of 121 (5.8%)
+Instructions used: 15 out of 121 (12.4%)
 
 "ATxmega128A1U" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000252     84      0     84  139264   0.1%
+[.cseg] 0x000000 0x000306    264      0    264  139264   0.2%
 [.dseg] 0x002000 0x003fff      0   8191   8191    8192 100.0%
 [.eseg] 0x000000 0x000000      0      0      0    2048   0.0%
 
-Assembly complete, 0 errors, 0 warnings
+Assembly complete, 0 errors, 1 warnings

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm Thu Jun 01 00:00:25 2023
+AVRASM ver. 2.2.8  C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm Thu Jun 01 18:21:11 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -4888,12 +4888,22 @@ EQU  allones      000000ff
 EQU  allzeroes    00000000
 EQU  s2bit        00000003
 EQU  s1bit        00000002
+EQU  sysclk       001e8480
+EQU  debouncereciprocal 00000064
+EQU  offset       00000000
+EQU  prescalar    00000400
 DSEG ANIMATION    00002000
 CSEG MAIN         00000100
-CSEG IO_INIT      00000115
-CSEG TC_INIT      0000011f
+CSEG IO_INIT      00000165
+CSEG TC_INIT      00000171
 CSEG EDIT         0000010c
-CSEG play         00000114
-CSEG STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP 00000114
-CSEG PLAY_LOOP    00000114
-CSEG DONE         00000114
+CSEG play         00000138
+CSEG debounceloop 00000121
+CSEG STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP 00000130
+CSEG storeframe   00000134
+CSEG PLAY_LOOP    0000013d
+CSEG comparexylower 00000141
+CSEG comparexyhigher 00000146
+CSEG fivecyclecounter 0000014b
+CSEG loadanimationframe 00000159
+CSEG DONE         00000164

@@ -19,9 +19,9 @@
 .EQU s2bit = 3
 .EQU s1bit = 2
 .EQU sysclk = 2000000
-.EQU reciprocal =1/.01
+.EQU debouncereciprocal =1/.01
 .EQU offset = 0
-.EQU prescalar = 8
+.EQU prescalar = 1024
 ;*******END OF DEFINED SYMBOLS***********************
 
 ;*******MEMORY CONSTANTS*****************************
@@ -71,7 +71,7 @@ EDIT:
 	lds r16, PORTF_IN
 ; If it is determined that relevant switch was pressed, 
 ; go to "PLAY" mode.
-	sbrc r16, s2bit
+	sbrs r16, s2bit
 	rjmp play
 
 ; Otherwise, if the "PLAY" mode switch was not pressed,
@@ -83,8 +83,8 @@ EDIT:
 
 ; If the "STORE_FRAME" switch was not pressed,
 ; branch back to "EDIT".
-	lds r16, PORTA_IN
-	sbrs r16, s1bit
+	lds r17, PORTF_IN
+	sbrc r17, s1bit
 	rjmp edit
 
 ; Otherwise, if it was determined that relevant switch was pressed,
@@ -92,21 +92,20 @@ EDIT:
 ; and wait for it to overflow. (Write to CTRLA and loop until
 ; the OVFIF flag within INTFLAGS is set.)
 	
-	;initialize CTRLA
-	ldi r16, TC_CLKSEL_DIV8_gc
-	sts TCC0_CTRLA,r16
 	;load period register
-	ldi r16,low(((sysclk/prescalar)/reciprocal)+offset)
+	ldi r16,low(((sysclk/prescalar)/debouncereciprocal)+offset)
 	sts TCC0_PER, r16
-	ldi r16,high(((sysclk/prescalar)/reciprocal)+offset)
+	ldi r16,high(((sysclk/prescalar)/debouncereciprocal)+offset)
 	sts TCC0_PER+1,r16
+	ldi r16,TC_CLKSEL_DIV1024_gc
+	sts TCC0_CTRLA,r16
 
 	;debouncing
 	debounceloop:
 		lds r17,TCC0_INTFLAGS
 		;check ov flag
 		;branch if we have overflow
-		sbrs  r17,0
+		sbrs  r17,TC0_OVFIF_bp
 		rjmp debounceloop
 
 ; After relevant timer/counter has overflowed (i.e., after
@@ -122,15 +121,24 @@ EDIT:
 	;clear ov flag
 	ldi r17, 0b00000001
 	sts TCC0_INTFLAGS,r17
-
-	;red switch again
-	lds r16, PORTA_IN
-	sbrs r16, s1bit
-	rjmp edit
+	;clear period register
+	ldi r17, 0b00000000
+	sts TCC0_PER,r17
+	sts TCC0_PER+1,r17
 
 ; Wait for the "STORE FRAME" switch to be released
 ; before jumping to "EDIT".
 STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP:
+	;read switch again
+	lds r17, PORTF_IN
+	sbrs r17, s1bit
+	rjmp store_frame_switch_release_wait_loop
+	storeframe:
+		;store port A registers in X
+		lds r16, PORTA_IN
+		st x+, r16
+		rjmp edit
+	
 	
 	
 ; "PLAY" mode
@@ -138,18 +146,20 @@ PLAY:
 
 ; Reload the relevant index to the first memory location
 ; within the animation table to play animation from first frame.
-
+	ldi YL,low(animation_start_addr)
+	ldi YH,high(animation_start_addr)
+	ld r16, y+
+	sts PORTC_OUT,r16
 
 PLAY_LOOP:
 
 ; Check if it is intended that "EDIT" mode be started
 ; i.e., check if the relevant switch has been pressed.`
-
-
+	lds r17, PORTF_IN
 ; If it is determined that relevant switch was pressed, 
 ; go to "EDIT" mode.
-
-
+	sbrs r17, s1bit
+	rjmp edit
 ; Otherwise, if the "EDIT" mode switch was not pressed,
 ; determine if index used to load frames has the same
 ; address as the index used to store frames, i.e., if the end
@@ -158,6 +168,21 @@ PLAY_LOOP:
 ; including zero, to playback properly.)
 ; To efficiently determine if these index values are equal,
 ; a combination of the "CP" and "CPC" instructions is recommended.
+	
+	comparexylower:
+		;compare lower bytes of x and y
+		mov r16,xl
+		mov r17, yl
+		cp r16,r17
+		breq comparexyhigher
+		rjmp fivecyclecounter
+		comparexyhigher:
+			;compare higher bytes of x and y
+			mov r16,xh
+			mov r17, yh
+			cp r16,r17
+			breq play
+			rjmp fivecyclecounter
 
 
 ; If index values are equal, branch back to "PLAY" to
@@ -173,7 +198,32 @@ PLAY_LOOP:
 ; clear the relevant OVFIF flag,
 ; and then jump back to "PLAY_LOOP".
 
-
+fivecyclecounter:
+	;load period register
+	ldi r16,5
+	sts TCC0_PER, r16
+	ldi r16,0
+	sts TCC0_PER+1,r16
+	ldi r16,TC_CLKSEL_DIV1024_gc
+	sts TCC0_CTRLA,r16
+	ldi r16,0
+	sts TCC0_CNT, r16
+	sts TCC0_CNT+1,r16
+	loadanimationframe:
+		;load animation frames
+		ld r16, y+
+		sts PORTC_OUT,r16
+		lds r17,TCC0_INTFLAGS
+		;check ov flag
+		;branch if we have overflow
+		sbrs  r17,TC0_OVFIF_bp
+		rjmp loadanimationframe
+		;clear OVF
+		ldi r17, 0b00000001
+		sts TCC0_INTFLAGS,r17
+		rjmp play_loop
+	
+		
 ; end of program (never reached)
 DONE: 
 	rjmp DONE
@@ -190,7 +240,7 @@ DONE:
 ;****************************************************
 IO_INIT:
 ; protect relevant registers
-
+	push r16
 ; initialize the relevant I/O
 	;set port C as output
 	ldi r16, allones
@@ -202,7 +252,7 @@ IO_INIT:
 	ldi r16, allones
 	sts PORTF_DIRCLR,r16
 ; recover relevant registers
-	
+	pop r16
 ; return from subroutine
 	ret
 ;****************************************************
@@ -214,15 +264,21 @@ IO_INIT:
 ;****************************************************
 TC_INIT:
 ; protect relevant registers
-
+	push r16
 ; initialize the relevant TC modules
 	ldi r16, allzeroes
 	sts TCC0_CNT, r16
 	sts TCC0_CNT+1,r16
 	sts TCC0_PER, r16
 	sts TCC0_PER+1, r16
+	;initialize CTRLB
+	ldi r16, allzeroes
+	sts TCC0_CTRLB,r16
+	;clear OVF
+	ldi r17, 0b00000001
+	sts TCC0_INTFLAGS,r17
 ; recover relevant registers
-	
+	pop r16
 ; return from subroutine
 	ret
 

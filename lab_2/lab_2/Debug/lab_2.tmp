@@ -1,19 +1,19 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.8</VERSION>
  <DEVICE>"ATxmega128A1U"</DEVICE>
- <WORKING_DIR>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\Debug</WORKING_DIR>
  <INCLUDE_PATH>
   <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc</DIR>
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128A1Udef.inc</FILE>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\avrasm\inc\ATxmega128a1udef.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\Debug\lab_2.obj</FILE>
+  <FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\Debug\lab_2.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>lab_2.hex</FILE>
@@ -23,14 +23,20 @@
   <FILE>lab_2.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <ANIMATION><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>27</LINE></ANIMATION>
-  <MAIN><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>38</LINE></MAIN>
-  <IO_INIT><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>163</LINE></IO_INIT>
-  <TC_INIT><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>187</LINE></TC_INIT>
-  <EDIT><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>63</LINE></EDIT>
-  <play><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>109</LINE></play>
-  <STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>105</LINE></STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP>
-  <PLAY_LOOP><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>115</LINE></PLAY_LOOP>
-  <DONE><FILE>C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>150</LINE></DONE>
+  <ANIMATION><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>31</LINE></ANIMATION>
+  <MAIN><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>42</LINE></MAIN>
+  <IO_INIT><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>241</LINE></IO_INIT>
+  <TC_INIT><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>265</LINE></TC_INIT>
+  <EDIT><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>67</LINE></EDIT>
+  <play><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>145</LINE></play>
+  <debounceloop><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>104</LINE></debounceloop>
+  <STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>131</LINE></STORE_FRAME_SWITCH_RELEASE_WAIT_LOOP>
+  <storeframe><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>136</LINE></storeframe>
+  <PLAY_LOOP><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>154</LINE></PLAY_LOOP>
+  <comparexylower><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>172</LINE></comparexylower>
+  <comparexyhigher><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>179</LINE></comparexyhigher>
+  <fivecyclecounter><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>201</LINE></fivecyclecounter>
+  <loadanimationframe><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>212</LINE></loadanimationframe>
+  <DONE><FILE>C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_4.asm</FILE><LINE>228</LINE></DONE>
  </LABELS>
 </ASSEMBLER_INFO>
