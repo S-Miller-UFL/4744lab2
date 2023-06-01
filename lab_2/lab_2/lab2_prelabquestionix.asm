@@ -1,8 +1,9 @@
-;Lab 2, Section 3
+;Lab 2, prelab question ix
 ;Name: Steven Miller
 ;Class #: 11318
 ;PI Name: Anthony Stross
-;Description: Implements software delay using timer
+;Description: Implements software delay using timer with prescalar
+;value of 2
 ;***************INCLUDES*************************************
 .include "ATxmega128a1udef.inc"
 ;***************END OF INCLUDES******************************
@@ -11,11 +12,11 @@
 .EQU input = 0b00000000
 .EQU output = 0b11111111
 ;.EQU div2 = 0b00000010
-.EQU prescalar = 8
+.EQU prescalar = 2
 .EQU sysclk = 2000000
 .EQU desiredperiod = .04 ;40ms
 .EQU reciprocol = 1/.04 ;idk how to spell reciprocol
-.EQU offset = 175 ;correcting for imprecision
+.EQU offset = 760 ;correcting for imprecision
 ;*******************************END OF EQUATES*******************************
 
 ;*********************************DEFS********************************
@@ -39,7 +40,7 @@ sts TCC0_CNT+1,r16
 ;***********************NOTES***********************
 ;if we want to achieve a period of 40 ms with a prescalar of 8
 ;and a frequency of 2mhz, that equates to:
-;ticks = (2000000cycles/second)/(8cycles/tick)*.04seconds = 10000 ticks
+;ticks = (2000000cycles/second)/(2cycles/tick)*.04seconds = 40000 ticks
 ;ticks = (systemclock/prescalar) / (1/desiredperiod)
 ;it also may be a good idea to add a number that corrects
 ;for any imprecision 
@@ -52,7 +53,7 @@ ldi r16,high(((sysclk/prescalar)/reciprocol)+offset)
 sts TCC0_PER+1,r16
 
 ;initialize clksel
-ldi r16, TC_CLKSEL_DIV8_gc
+ldi r16, TC_CLKSEL_DIV2_gc
 sts TCC0_CTRLA,r16
 
 ;toggle output port

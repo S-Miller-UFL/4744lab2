@@ -15,7 +15,7 @@
     <Name>lab_2</Name>
     <RootNamespace>lab_2</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
-    <EntryFile>$(MSBuildProjectDirectory)\lab2_3.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\lab2_4.asm</EntryFile>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -28,15 +28,14 @@
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
-    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
-    <avrtoolserialnumber>
-    </avrtoolserialnumber>
+    <avrtool>com.atmel.avrdbg.tool.edbg</avrtool>
+    <avrtoolserialnumber>ATMLEDBGC00000001464</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x1E974C</avrdeviceexpectedsignature>
     <avrtoolinterface>PDI</avrtoolinterface>
     <com_atmel_avrdbg_tool_edbg>
       <ToolOptions>
         <InterfaceProperties>
-          <PdiClock>0</PdiClock>
+          <PdiClock>4000000</PdiClock>
         </InterfaceProperties>
         <InterfaceName>PDI</InterfaceName>
       </ToolOptions>
@@ -44,17 +43,18 @@
       <ToolNumber>ATMLEDBGC00000001464</ToolNumber>
       <ToolName>EDBG</ToolName>
     </com_atmel_avrdbg_tool_edbg>
-    <avrtoolinterfaceclock>0</avrtoolinterfaceclock>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
     <com_atmel_avrdbg_tool_simulator>
-      <ToolOptions xmlns="">
+      <ToolOptions>
         <InterfaceProperties>
         </InterfaceProperties>
-        <InterfaceName>PDI</InterfaceName>
+        <InterfaceName>
+        </InterfaceName>
       </ToolOptions>
-      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
-      <ToolNumber xmlns="">
+      <ToolType>com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber>
       </ToolNumber>
-      <ToolName xmlns="">Simulator</ToolName>
+      <ToolName>Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -90,6 +90,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="lab2_3.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lab2_4.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lab2_prelabquestionix.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="lab2_prelabquestionx.asm">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

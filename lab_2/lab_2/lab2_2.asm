@@ -39,9 +39,9 @@ STS PORTC_DIR , R22
 ldi zero_r18,0
 ldi one_r19,1
 ldi four_r20,4
-ldi multiple_r21,4
 ;loop to call subroutine
 LOOP:
+	ldi multiple_r21,1
 	rcall delay_x_10ms
 	STS PORTC_OUTTGL,R22
 RJMP LOOP

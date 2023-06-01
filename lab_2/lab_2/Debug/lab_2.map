@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\steve\source\eel3744\lab 2\lab_2\lab_2\lab2_3.asm Wed May 31 00:37:35 2023
+AVRASM ver. 2.2.8  C:\Users\steve\source\repos\eel4744\lab 2\lab_2\lab_2\lab2_prelabquestionx.asm Wed May 31 18:59:12 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -4881,8 +4881,15 @@ EQU  USART_DRE_voffset 00000002
 EQU  USART_TXC_voffset 00000004
 EQU  SPI_INT_voffset 00000000
 EQU  INT_VECTORS_SIZE 000000fe
-EQU  input        00000000
-EQU  output       000000ff
-EQU  div2         00000002
+EQU  prescalar    00000040
+EQU  sysclk       001e8480
+EQU  desiredperiod 00000001
+EQU  reciprocol   00000001
+EQU  offset       0000024e
+DEF  second_r18   r18
+DEF  minute_r19   r19
+DEF  one_r20      r20
 CSEG MAIN         00000100
-CSEG LOOP         00000106
+CSEG loop         00000114
+CSEG decrementsecond 0000011a
+CSEG end          00000124
