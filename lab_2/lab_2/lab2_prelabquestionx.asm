@@ -11,7 +11,7 @@
 .EQU prescalar = 64
 .EQU sysclk = 2000000
 .EQU desiredperiod = 1 ;1000ms
-.EQU reciprocol = 1/1 ;idk how to spell reciprocol
+.EQU reciprocal = 1/1 ;idk how to spell reciprocal
 .EQU offset = 590 ;correcting for imprecision
 ;*******************************END OF EQUATES*******************************
 
@@ -46,9 +46,9 @@ sts TCC0_CNT+1,r16
 ;***********************END OF NOTES*****************
 
 ;initialize period register
-ldi r16,low(((sysclk/prescalar)/reciprocol)+offset)
+ldi r16,low(((sysclk/prescalar)/reciprocal)+offset)
 sts TCC0_PER, r16
-ldi r16,high(((sysclk/prescalar)/reciprocol)+offset)
+ldi r16,high(((sysclk/prescalar)/reciprocal)+offset)
 sts TCC0_PER+1,r16
 
 ;initialize clksel
