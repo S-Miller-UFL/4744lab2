@@ -2,7 +2,7 @@
 ;  File name: lab2_4.asm
 ;  Author: Christopher Crary
 ;  Last Modified By: Steven Miller
-;  Last Modified On: 31 May 2023
+;  Last Modified On: 1 june 2023
 ;  Purpose: To allow LED animations to be created with the OOTB uPAD,OOTB SLB, and OOTB MB.
 ;******************************************************************************
 
@@ -20,6 +20,7 @@
 .EQU s1bit = 2
 .EQU sysclk = 2000000
 .EQU debouncereciprocal =1/.01
+.EQU animationreciprocal = 1/.2
 .EQU offset = 0
 .EQU prescalar = 1024
 ;*******END OF DEFINED SYMBOLS***********************
@@ -148,8 +149,8 @@ PLAY:
 ; within the animation table to play animation from first frame.
 	ldi YL,low(animation_start_addr)
 	ldi YH,high(animation_start_addr)
-	ld r16, y+
-	sts PORTC_OUT,r16
+	ld r20, y
+	sts PORTC_OUT,r20
 
 PLAY_LOOP:
 
@@ -168,7 +169,7 @@ PLAY_LOOP:
 ; including zero, to playback properly.)
 ; To efficiently determine if these index values are equal,
 ; a combination of the "CP" and "CPC" instructions is recommended.
-	
+	ld r20, y
 	comparexylower:
 		;compare lower bytes of x and y
 		mov r16,xl
@@ -200,19 +201,20 @@ PLAY_LOOP:
 
 fivecyclecounter:
 	;load period register
-	ldi r16,5
+	ldi r16,low(((sysclk/prescalar)/animationreciprocal)+offset)
 	sts TCC0_PER, r16
-	ldi r16,0
+	ldi r16,high(((sysclk/prescalar)/animationreciprocal)+offset)
 	sts TCC0_PER+1,r16
+	;initialize CLKSEL
 	ldi r16,TC_CLKSEL_DIV1024_gc
 	sts TCC0_CTRLA,r16
 	ldi r16,0
+	;initialize count
 	sts TCC0_CNT, r16
 	sts TCC0_CNT+1,r16
 	loadanimationframe:
 		;load animation frames
-		ld r16, y+
-		sts PORTC_OUT,r16
+		sts PORTC_OUT,r20
 		lds r17,TCC0_INTFLAGS
 		;check ov flag
 		;branch if we have overflow
@@ -221,6 +223,7 @@ fivecyclecounter:
 		;clear OVF
 		ldi r17, 0b00000001
 		sts TCC0_INTFLAGS,r17
+		adiw y,1
 		rjmp play_loop
 	
 		
