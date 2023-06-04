@@ -2,7 +2,7 @@
 ;  File name: lab2_4.asm
 ;  Author: Christopher Crary
 ;  Last Modified By: Steven Miller
-;  Last Modified On: 1 june 2023
+;  Last Modified On: 3 june 2023
 ;  Purpose: To allow LED animations to be created with the OOTB uPAD,OOTB SLB, and OOTB MB.
 ;******************************************************************************
 
@@ -22,6 +22,7 @@
 .EQU debouncereciprocal =1/.01
 .EQU animationreciprocal = 1/.2
 .EQU offset = 0
+.EQU animationoffset = -192;to make it 5hz
 .EQU prescalar = 1024
 ;*******END OF DEFINED SYMBOLS***********************
 
@@ -200,27 +201,28 @@ PLAY_LOOP:
 ; and then jump back to "PLAY_LOOP".
 
 fivecyclecounter:
+	;initialize count
+	ldi r16,0
+	sts TCC0_CNT, r16
+	sts TCC0_CNT+1,r16
 	;load period register
-	ldi r16,low(((sysclk/prescalar)/animationreciprocal)+offset)
+	ldi r16,low(((sysclk/prescalar)/animationreciprocal)+animationoffset)
 	sts TCC0_PER, r16
-	ldi r16,high(((sysclk/prescalar)/animationreciprocal)+offset)
+	ldi r16,high(((sysclk/prescalar)/animationreciprocal)+animationoffset)
 	sts TCC0_PER+1,r16
 	;initialize CLKSEL
 	ldi r16,TC_CLKSEL_DIV1024_gc
 	sts TCC0_CTRLA,r16
-	ldi r16,0
-	;initialize count
-	sts TCC0_CNT, r16
-	sts TCC0_CNT+1,r16
+	;load animation frames
+	sts PORTC_OUT,r20
 	loadanimationframe:
-		;load animation frames
-		sts PORTC_OUT,r20
 		lds r17,TCC0_INTFLAGS
 		;check ov flag
 		;branch if we have overflow
 		sbrs  r17,TC0_OVFIF_bp
 		rjmp loadanimationframe
 		;clear OVF
+		;sts PORTC_OUT,r20
 		ldi r17, 0b00000001
 		sts TCC0_INTFLAGS,r17
 		adiw y,1
